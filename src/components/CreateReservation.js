@@ -26,22 +26,6 @@ function CreateReservation(){
       setMobile('');
       setDob('');
     }
-
-    React.useEffect(()=>{
-      return ref.onSnapshot((querySnapshot)=>{
-        const resList = [];
-        querySnapshot.forEach((doc)=>{
-          const {email,username,mobile,dob} = doc.data();
-          resList.push({
-            id: doc.id,
-            email,
-            username,
-            mobile,
-            dob
-          })
-        })
-      })
-    },[]);
     return(
 			<View style={styles.container}>
 				<Input

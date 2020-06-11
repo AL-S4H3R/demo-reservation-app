@@ -1,5 +1,6 @@
 import React from 'react';
-import {View,Text,FlatList,ActivityIndicator} from 'react-native';
+import {ScrollView,FlatList,ActivityIndicator} from 'react-native';
+import {ListItem} from 'react-native-elements';
 
 import firestore from '@react-native-firebase/firestore';
 
@@ -32,16 +33,18 @@ function ReadReservation(){
     	return <ActivityIndicator />
     }
 	return(
-		<View>
-			<FlatList 
-				data={reservation}
-				renderItem={({item})=>(
-					<View>
-						
-					</View>
-				)}
-			/>
-		</View>
+		<ScrollView>
+			{
+				reservation.map((l,i)=>(
+					<ListItem 
+						key={i}
+						title={l.key}
+						subtitle={l.email}
+						bottomDivider
+					/>
+				))
+			}
+		</ScrollView>
 	);
 }
 
