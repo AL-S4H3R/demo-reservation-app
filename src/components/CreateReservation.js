@@ -2,11 +2,47 @@ import React,{ Component } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Input, Button } from 'react-native-elements';
 import { View, StyleSheet } from 'react-native';
+import firestore from '@react-native-firebase/firestore';
 
-class CreateReservation extends Component {
+function CreateReservation(){
+		
+    const [email,setEmail] = React.useState('');
+    const [username,setUser] = React.useState('');
+    const [mobile,setMobile] = React.useState('');
+    const [dob,setDob] = React.useState(''); 
+    const [loading,setLoading] = React.useState(true);
+    const [reservation,setReservation] = React.useState([]);
+    const ref = firestore().collection('reservations');
 
-	render(){
-		return(
+    async function addToDatabase() {
+      await ref.add({
+        email: email,
+        username: username,
+        mobile: mobile,
+        dob: dob
+      });
+      setEmail('');
+      setUser('');
+      setMobile('');
+      setDob('');
+    }
+
+    React.useEffect(()=>{
+      return ref.onSnapshot((querySnapshot)=>{
+        const resList = [];
+        querySnapshot.forEach((doc)=>{
+          const {email,username,mobile,dob} = doc.data();
+          resList.push({
+            id: doc.id,
+            email,
+            username,
+            mobile,
+            dob
+          })
+        })
+      })
+    },[]);
+    return(
 			<View style={styles.container}>
 				<Input
   					placeholder='Email'
@@ -17,7 +53,9 @@ class CreateReservation extends Component {
       						color='black'
     					/>
   					}
-  				/>
+            value={email}
+            onChangeText={setEmail}
+          />
 				<Input
   					placeholder='Username'
   					leftIcon={
@@ -27,6 +65,8 @@ class CreateReservation extends Component {
       						color='black'
     					/>
   					}
+            value={username}
+            onChangeText={setUser}
   			/>
         <Input
             placeholder='Mobile number'
@@ -37,6 +77,8 @@ class CreateReservation extends Component {
                   color='black'
               />
             }
+            value={mobile}
+            onChangeText={setMobile}
         />
         <Input
             placeholder='Date of Birth'
@@ -47,6 +89,8 @@ class CreateReservation extends Component {
                   color='black'
               />
             }
+            value={dob}
+            onChangeText={setDob}
         />
   			<Button
   				icon={
@@ -58,10 +102,10 @@ class CreateReservation extends Component {
   				}
  	 				title=" Save"
  	 				buttonStyle = {styles.button}
-				/>
+          onPress={()=> addToDatabase()}
+        />
 			</View>
 		)
-	}
 }
 
 export default CreateReservation;

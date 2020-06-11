@@ -1,16 +1,27 @@
-import React,{Component} from 'react';
+import React from 'react';
 import {View,StyleSheet} from 'react-native';
 import {Input,Button} from 'react-native-elements';
+import firestore from '@react-native-firebase/firestore';
 
-class DeleteReservation extends Component {
-	render(){
+function DeleteReservation(){
+		
+		const [deleteId,setDeleteId] = React.useState('');
+		const [isDeleted,setIsDeleted] = React.useState(true);
+		const ref = firestore().collection('reservations');
+
+		async function deleteReservation(id){
+			console.log(id);
+			await ref.doc(`${id}`).delete();
+			setIsDeleted(true);
+			setDeleteId('');
+		}
+
 		return(
 			<View style={styles.container}>
-				<Input placeholder="Enter Reservation Id:" />
-				<Button title="Enter" buttonStyle={styles.button}/>
+				<Input placeholder="Enter Reservation Id:" value={deleteId} onChangeText={setDeleteId}/>
+				<Button title="Enter" buttonStyle={styles.button} onPress={()=> deleteReservation(deleteId)}/>
 			</View>
 		)
-	}
 }
 
 export default DeleteReservation;

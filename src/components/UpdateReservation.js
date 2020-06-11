@@ -1,24 +1,40 @@
-import React,{Component} from 'react';
+import React,{useState} from 'react';
 import {View,StyleSheet} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Input, Button } from 'react-native-elements';
+import firestore from '@react-native-firebase/firestore';
 
-import {createStackNavigator} from '@react-navigation/stack';
+function UpdateReservation(){
+    
+	const [email,setEmail] = useState('');
+    const [username,setUser] = useState('');
+    const [mobile,setMobile] = useState('');
+    const [dob,setDob] = useState('');
+    const [id,setId] = useState('');
 
-const Stack = createStackNavigator();
+    const ref = firestore().collection('reservations');
 
-const UpdateId = ({navigation}) => {
-	return(
-		<View style={styles.container}>
-			<Input placeholder="Enter Reservation Id:" />
-			<Button title="Enter" buttonStyle={styles.button} onPress={()=> navigation.navigate('Enter Updated Details')}/>
-		</View>
-	)
-}
+    async function updateDatabase(id){
+    	await ref.doc(id).update({
+    		email:email,
+    		username:username,
+    		mobile:mobile,
+    		dob:dob
+    	});
+    	setEmail('');
+    	setId('');
+    	setMobile('');
+    	setUser('');
+    	setDob('');
+    }
 
-const NewDetails = () => {
-	return(
+    return(
 			<View style={styles.container}>
+				<Input 
+					placeholder="Reservation Id"
+					value={id}
+					onChangeText={setId}
+				/>
 				<Input
   					placeholder='Email'
   					leftIcon={
@@ -28,7 +44,9 @@ const NewDetails = () => {
       						color='black'
     					/>
   					}
-  				/>
+            value={email}
+            onChangeText={setEmail}
+          />
 				<Input
   					placeholder='Username'
   					leftIcon={
@@ -38,52 +56,48 @@ const NewDetails = () => {
       						color='black'
     					/>
   					}
-  				/>
-        		<Input
-            		placeholder='Mobile number'
-            		leftIcon={
-              			<Icon
-                  			name='mobile-phone'
-                  			size={50}
-                  			color='black'
-              			/>
-            		}
-        		/>
-        		<Input
-            		placeholder='Date of Birth'
-            		leftIcon={
-              			<Icon
-                  			name='calendar'
-                  			size={30}
-                  			color='black'
-              			/>
-            		}
-        		/>
-  				<Button
-  					icon={
-    					<Icon
-      						name="send"
-      						size={15}
-      						color="white"
-    					/>
-  					}
- 	 				title=" Update"
+            value={username}
+            onChangeText={setUser}
+  			/>
+        <Input
+            placeholder='Mobile number'
+            leftIcon={
+              <Icon
+                  name='mobile-phone'
+                  size={50}
+                  color='black'
+              />
+            }
+            value={mobile}
+            onChangeText={setMobile}
+        />
+        <Input
+            placeholder='Date of Birth'
+            leftIcon={
+              <Icon
+                  name='calendar'
+                  size={30}
+                  color='black'
+              />
+            }
+            value={dob}
+            onChangeText={setDob}
+        />
+  			<Button
+  				icon={
+    						<Icon
+      							name="send"
+      							size={15}
+      							color="white"
+    						/>
+  				}
+ 	 				title=" Save"
  	 				buttonStyle = {styles.button}
-				/>
+        			onPress={()=> updateDatabase(id)}
+        />
 			</View>
-
-	)
-}
-
-class UpdateReservation extends Component {
-	render(){
-		return(
-				<Stack.Navigator>
-					<Stack.Screen name="Update Reservation" component={UpdateId} />
-					<Stack.Screen name="Enter Updated Details" component={NewDetails} />
-				</Stack.Navigator>				
 		)
-	}
+
 }
 
 export default UpdateReservation;
@@ -97,6 +111,6 @@ const styles = StyleSheet.create({
 		padding: 10
 	},
 	container: {
-		marginTop: 200
+		marginTop: 100
 	}
 });
