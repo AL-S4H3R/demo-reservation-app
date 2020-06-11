@@ -1,5 +1,5 @@
 import React from 'react';
-import {View,Text,FlatList} from 'react-native';
+import {View,Text,FlatList,ActivityIndicator} from 'react-native';
 
 import firestore from '@react-native-firebase/firestore';
 
@@ -10,37 +10,39 @@ function ReadReservation(){
     const ref = firestore().collection('reservations');
 
     React.useEffect(()=>{
-    	const subscriber = ref.onSnapshot((querySnapshot)=>{
-    		console.log(`Size: ${querySnapshot.size}`);
-    		const reservationList = [];
-    		querySnapshot.forEach((docSnapshot)=>{
-    			console.log(`Id: ${docSnapshot.id}`);
-    			reservationList.push({
-    				email: docSnapshot.data().email,
-    				username: docSnapshot.data().username,
-    				mobile: docSnapshot.data().mobile,
-    				dob: docSnapshot.data().dob,
-    				id: docSnapshot.id
-    			});
-    			console.log(reservationList);
-    			setReservation(reservationList);
-    		})
-    	})			
+    	var list = [];
+    	const subscriber = ref
+    						  .onSnapshot((querySnap)=>{
+    						  	console.log(`Size : ${querySnap.size}`);
+    							querySnap.forEach((doc)=>{
+    								list.push({
+    									...doc.data(),
+    									key: doc.id
+    								});
+    							});  	
+    						  console.log(list);
+    						  setReservation(list);
+    						  setLoading(false);	
+    					 })
+    	return () => subscriber();
+
     },[]);
 
-    function ShowReservations({array}){
-    	array.filter((item)=>{
-    		return(
-    			<View>
-    				<Text>{item}</Text>
-    			</View>
-    		)
-    	});
+    if(loading){
+    	return <ActivityIndicator />
     }
-
 	return(
-		<ShowReservations array={reservation}/>
-	)
+		<View>
+			<FlatList 
+				data={reservation}
+				renderItem={({item})=>(
+					<View>
+						
+					</View>
+				)}
+			/>
+		</View>
+	);
 }
 
 
